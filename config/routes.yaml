@@ -4,16 +4,18 @@
 #  methods:  GET
 #
 
+api_rates:
+  path: /api/rates
+  controller: App\Controller\ExchangeRateController::index
+  methods: GET
+
 setupcheck:
-    path: /api/setup-check
-    controller: App\Controller\DefaultController::setupCheck
+  path: /api/setup-check
+  controller: App\Controller\DefaultController::setupCheck
 
 index:
-    path: /{wildcard}
-    defaults: {
-        _controller: App\Controller\DefaultController::index
-    }
-    requirements:
-        wildcard: .*
-    # controller: App\Controller\DefaultController::index
-
+  path: /{wildcard}
+  defaults: { _controller: App\Controller\DefaultController::index }
+  requirements:
+    wildcard: .*
+  # controller: App\Controller\DefaultController::index
