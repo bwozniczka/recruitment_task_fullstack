@@ -1,4 +1,4 @@
-FROM php:7.2-apache
+FROM php:8.2-apache
 
 WORKDIR /var/www/html
 
@@ -20,6 +20,8 @@ RUN composer install
 
 RUN mkdir -p /var/www/html/public/build
 RUN chown -R www-data:www-data /var/www
+
+RUN docker-php-ext-install zip opcache
 
 RUN npm run build
 
