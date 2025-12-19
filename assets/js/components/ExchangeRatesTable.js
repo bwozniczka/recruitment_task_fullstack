@@ -50,9 +50,12 @@ export const ExchangeRatesTable = () => {
             <tbody>
               {rates.map((rate) => (
                 <tr key={rate.currency}>
-                  <td>{rate.currency}</td>
                   <td>
-                    <strong>{rate.currency}</strong>
+                    {rate.currency.charAt(0).toUpperCase() +
+                      rate.currency.slice(1)}
+                  </td>
+                  <td>
+                    <strong>{rate.code}</strong>
                   </td>
                   <td>{rate.mid_rate} PLN</td>
                   <td
