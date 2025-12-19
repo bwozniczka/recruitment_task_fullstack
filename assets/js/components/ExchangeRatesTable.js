@@ -1,5 +1,6 @@
 import React from "react"
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 
 export const ExchangeRatesTable = () => {
   const [rates, setRates] = useState([])
@@ -37,7 +38,7 @@ export const ExchangeRatesTable = () => {
           <h4 className="mb-0">Aktualne Kursy Walut</h4>
         </div>
         <div className="card-body p-0">
-          <table className="table table-striped table-hover mb-0">
+          <table className="table table-striped mb-0">
             <thead className="thead-dark">
               <tr>
                 <th>Waluta</th>
@@ -45,6 +46,7 @@ export const ExchangeRatesTable = () => {
                 <th>Kurs Średni (NBP)</th>
                 <th>Skup</th>
                 <th>Sprzedaż</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -69,6 +71,14 @@ export const ExchangeRatesTable = () => {
                   </td>
                   <td className="text-primary font-weight-bold">
                     {rate.sell_rate} PLN
+                  </td>
+                  <td>
+                    <Link
+                      to={`/history/${rate.code}`}
+                      className="btn btn-sm btn-primary text-white"
+                    >
+                      Zobacz Historię
+                    </Link>
                   </td>
                 </tr>
               ))}

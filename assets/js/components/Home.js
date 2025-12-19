@@ -4,6 +4,7 @@ import React, { Component } from "react"
 import { Route, Redirect, Switch, Link } from "react-router-dom"
 import SetupCheck from "./SetupCheck"
 import { ExchangeRatesTable } from "./ExchangeRatesTable"
+import { HistoryRateTable } from "./HistoryRateTable"
 
 class Home extends Component {
   render() {
@@ -22,19 +23,14 @@ class Home extends Component {
                   React Setup Check{" "}
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link className={"nav-link"} to={"/rates"}>
-                  {" "}
-                  Rates{" "}
-                </Link>
-              </li>
             </ul>
           </div>
         </nav>
         <Switch>
-          <Redirect exact from="/" to="/setup-check" />
+          <Redirect exact from="/" to="/rates" />
           <Route path="/setup-check" component={SetupCheck} />
           <Route path="/rates" component={ExchangeRatesTable} />
+          <Route path="/history/:currency" component={HistoryRateTable} />
         </Switch>
       </div>
     )
