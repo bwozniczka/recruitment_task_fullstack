@@ -9,6 +9,11 @@ api_rates:
   controller: App\Controller\ExchangeRateController::index
   methods: GET
 
+api_rates_history:
+  path: /api/rates/{code}/history
+  controller: App\Controller\ExchangeRateController::getHistory
+  methods: GET
+
 setupcheck:
   path: /api/setup-check
   controller: App\Controller\DefaultController::setupCheck

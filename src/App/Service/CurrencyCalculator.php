@@ -7,6 +7,7 @@ namespace App\Service;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use DateTimeImmutable;
 
 class CurrencyCalculator
 {
@@ -72,6 +73,57 @@ class CurrencyCalculator
             usort($processedRates, fn($a, $b) => $a['code'] <=> $b['code']);
 
             return $processedRates;
+        });
+    }
+
+    public function getCurrencyHistory(string $code, ?string $targetDate = null): array
+    {
+        $code = strtoupper($code);
+
+        $endDate = $targetDate ? new DateTimeImmutable($targetDate) : new DateTimeImmutable();
+        $startDate = $endDate->modify('-14 days');
+
+        $endDateStr = $endDate->format('Y-m-d');
+        $startDateStr = $startDate->format('Y-m-d');
+
+        $cacheKey = sprintf('history_%s_%s_%s', $code, $startDateStr, $endDateStr);
+
+        return $this->cache->get($cacheKey, function ($item) use ($code, $startDateStr, $endDateStr) {
+    
+            $item->expiresAfter(3600);
+
+            $url = sprintf(
+                'http://api.nbp.pl/api/exchangerates/rates/A/%s/%s/%s/?format=json',
+                $code,
+                $startDateStr,
+                $endDateStr
+            );
+
+            try {
+                $response = $this->client->request('GET', $url);
+                
+                if ($response->getStatusCode() !== 200) {
+                    return [];
+                }
+
+                $data = $response->toArray();
+
+
+                $history = [];
+                foreach ($data['rates'] as $rate) {
+                    $history[] = [
+                        'date' => $rate['effectiveDate'],
+                        'rate' => $rate['mid']
+                    ];
+                }
+
+                usort($history, fn($a, $b) => $b['date'] <=> $a['date']);
+
+                return $history;
+
+            } catch (\Exception $e) {
+                return [];
+            }
         });
     }
 }
