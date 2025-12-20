@@ -1,10 +1,21 @@
 import React from "react"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { Loading } from "./Loading"
+import { useSortableData } from "../hooks/useSortableData"
 
 export const ExchangeRatesTable = () => {
   const [rates, setRates] = useState([])
   const [loading, setLoading] = useState(true)
+
+  const {
+    items: sortedRates,
+    requestSort,
+    sortConfig,
+  } = useSortableData(rates, {
+    key: "code",
+    direction: "asc",
+  })
 
   useEffect(() => {
     fetch("/api/rates")
@@ -21,14 +32,18 @@ export const ExchangeRatesTable = () => {
       })
   }, [])
 
-  if (loading) {
-    return (
-      <div className="container mt-5 text-center">
-        <div className="spinner-border text-primary" role="status">
-          <span className="sr-only">Ładowanie...</span>
-        </div>
-      </div>
+  const getSortIndicator = (name) => {
+    if (!sortConfig || sortConfig.key !== name)
+      return <span className="text-muted small ml-1">↕</span>
+    return sortConfig.direction === "asc" ? (
+      <span className="text-warning ml-1">▲</span>
+    ) : (
+      <span className="text-warning ml-1">▼</span>
     )
+  }
+
+  if (loading) {
+    return <Loading />
   }
 
   return (
@@ -41,17 +56,42 @@ export const ExchangeRatesTable = () => {
           <table className="table table-striped mb-0">
             <thead className="thead-dark">
               <tr>
-                <th>Waluta</th>
-                <th>Kod</th>
-                <th>Kurs Średni (NBP)</th>
-                <th>Skup</th>
-                <th>Sprzedaż</th>
+                <th
+                  onClick={() => requestSort("currency")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Waluta {getSortIndicator("currency")}
+                </th>
+                <th
+                  onClick={() => requestSort("code")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Kod {getSortIndicator("code")}
+                </th>
+                <th
+                  onClick={() => requestSort("mid_rate")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Kurs Średni {getSortIndicator("mid_rate")}
+                </th>
+                <th
+                  onClick={() => requestSort("buy_rate")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Skup {getSortIndicator("buy_rate")}
+                </th>
+                <th
+                  onClick={() => requestSort("sell_rate")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Sprzedaż {getSortIndicator("sell_rate")}
+                </th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {rates.map((rate) => (
-                <tr key={rate.currency}>
+              {sortedRates.map((rate) => (
+                <tr key={rate.code}>
                   <td>
                     {rate.currency.charAt(0).toUpperCase() +
                       rate.currency.slice(1)}
@@ -72,12 +112,12 @@ export const ExchangeRatesTable = () => {
                   <td className="text-primary font-weight-bold">
                     {rate.sell_rate} PLN
                   </td>
-                  <td>
+                  <td className="text-right">
                     <Link
                       to={`/history/${rate.code}`}
-                      className="btn btn-sm btn-primary text-white"
+                      className="btn btn-sm btn-outline-primary"
                     >
-                      Zobacz Historię
+                      Historia &rarr;
                     </Link>
                   </td>
                 </tr>
