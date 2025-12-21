@@ -16,7 +16,10 @@ class CurrencyCalculator
         private readonly CacheInterface $cache,
 
         private readonly string $nbpApiUrl,
-        private readonly array $supportedCurrencies
+        private readonly string $nbpApiHistoryUrl,
+
+        private readonly array $supportedCurrencies,
+        private readonly array $majorCurrencies
     ) {
     }
 
@@ -53,20 +56,14 @@ class CurrencyCalculator
                     continue;
                 }
 
-                if (in_array($code, ['USD', 'EUR'])) {
-                    $buyRate = $mid - 0.15;
-                    $sellRate = $mid + 0.11;
-                } else {
-                    $buyRate = null; 
-                    $sellRate = $mid + 0.20;
-                }
+                $calculated = $this->calculateBuySell($code, $mid);
 
                 $processedRates[] = [
                     'currency' => $rate['currency'],
                     'code' => $code,
                     'mid_rate' => $mid,
-                    'buy_rate' => $buyRate ? round($buyRate, 4) : null,
-                    'sell_rate' => round($sellRate, 4),
+                    'buy_rate' => $calculated['buy'],
+                    'sell_rate' => $calculated['sell'],
                 ];
             }
 
@@ -74,6 +71,20 @@ class CurrencyCalculator
 
             return $processedRates;
         });
+    }
+
+    public function calculateBuySell(string $code, float $mid): array
+    {
+        if (in_array($code, $this->majorCurrencies)) {
+            return [
+                'buy' => round($mid - 0.15, 4),
+                'sell' => round($mid + 0.11, 4),
+            ];
+        }
+        return [
+            'buy' => null, 
+            'sell' => round($mid + 0.20, 4),
+        ];
     }
 
     public function getCurrencyHistory(string $code, ?string $targetDate = null): array
@@ -93,7 +104,7 @@ class CurrencyCalculator
             $item->expiresAfter(3600);
 
             $url = sprintf(
-                'http://api.nbp.pl/api/exchangerates/rates/A/%s/%s/%s/?format=json',
+                $this->nbpApiHistoryUrl,
                 $code,
                 $startDateStr,
                 $endDateStr
