@@ -23,7 +23,7 @@ class ExchangeRateController extends AbstractController
         
         $rates = $this->calculator->getRates();
 
-        return new JsonResponse([
+        return $this->json([
             'generated_at' => date('Y-m-d H:i:s'),
             'rates' => $rates
         ]);
