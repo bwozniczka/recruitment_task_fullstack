@@ -23,6 +23,7 @@
     "symfony/cache": "^4.4",
     "symfony/dotenv": "^4.4",
     "symfony/flex": "^1.21",
+    "symfony/http-client": "^5.4",
     "symfony/http-kernel": "^4.4",
     "symfony/twig-bundle": "^4.4.30",
     "symfony/webpack-encore-bundle": "^1.17",

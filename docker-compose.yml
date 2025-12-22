@@ -1,6 +1,4 @@
-version: '3.8'
 services:
-
   webserver:
     # Aby pliki byly poprawnie synchronizowane między kontenerem a windowsem
     volumes:
